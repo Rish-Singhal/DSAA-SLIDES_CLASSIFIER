@@ -1,5 +1,6 @@
 import sys
 import os
+import numpy as np
 import cv2
 
 dirname = sys.argv[1:]
@@ -11,23 +12,55 @@ if numArg != 2:
 
 
 sift = cv2.xfeatures2d.SIFT_create()
+indp = dict(algorithm=0, trees=5)
+srchp = dict()
+flann = cv2.FlannBasedMatcher(indp, srchp)
 
 slides = []
+slidesKey = []
+slidesDesc = []
+slidesName = []
 for files in os.listdir(dirname[0]):
     slide = cv2.imread(os.path.join(dirname[0], files))
     if slide is not None:
         gslide = cv2.cvtColor(slide, cv2.COLOR_BGR2GRAY)
-        keyPoint = sift.detect(gslide, None)
-        img = cv2.drawKeypoints(
-            gslide, keyPoint, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        slides.append(img)
+        keyPoint, desc = sift.detectAndCompute(gslide, None)
+        slides.append(slide)
+        slidesKey.append(keyPoint)
+        slidesDesc.append(desc)
+        slidesName.append(files)
 
 yslides = []
+yslidesKey = []
+yslidesDesc = []
+yslidesName = []
 for files in os.listdir(dirname[1]):
     yslide = cv2.imread(os.path.join(dirname[1], files))
     if slide is not None:
         gslide = cv2.cvtColor(yslide, cv2.COLOR_BGR2GRAY)
-        keyPoint = sift.detect(gslide, None)
-        img = cv2.drawKeypoints(
-            gslide, keyPoint, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-        yslides.append(img)
+        keyPoint, desc = sift.detectAndCompute(gslide, None)
+        yslides.append(yslide)
+        yslidesKey.append(keyPoint)
+        yslidesDesc.append(desc)
+        yslidesName.append(files)
+
+answer = []
+
+for i in range(len(slides)):
+    mm = -1
+    for j in range(len(yslides)):
+        similarity = flann.knnMatch(slidesDesc[i], slidesDesc[j], k=2)
+        points = []
+        for p1, p2 in similarity:
+            if p1.distance < 0.6*p2.distance:
+                points.append(p1)
+
+        if mm < len(points):
+            mm = len(points)
+            an = yslidesName[j]
+
+    answer.append(an)
+
+for i in range(len(slides)):
+    line = "%s %s" % (slidesName[i], answer[i])
+    print(line)
