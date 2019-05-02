@@ -11,6 +11,11 @@ if numArg != 2:
     exit(0)
 
 
+def printa(a):
+        for x in a:
+                print(x, end=' ')
+        print()
+
 sift = cv2.xfeatures2d.SIFT_create()
 indp = dict(algorithm=0, trees=5)
 srchp = dict()
@@ -20,7 +25,9 @@ slides = []
 slidesKey = []
 slidesDesc = []
 slidesName = []
-for files in os.listdir(dirname[0]):
+test_data = os.listdir(dirname[0])
+test_data.sort()
+for files in test_data:
     slide = cv2.imread(os.path.join(dirname[0], files))
     if slide is not None:
         gslide = cv2.cvtColor(slide, cv2.COLOR_BGR2GRAY)
@@ -34,7 +41,9 @@ yslides = []
 yslidesKey = []
 yslidesDesc = []
 yslidesName = []
-for files in os.listdir(dirname[1]):
+verify_data = os.listdir(dirname[1])
+verify_data.sort()
+for files in verify_data:
     yslide = cv2.imread(os.path.join(dirname[1], files))
     if slide is not None:
         gslide = cv2.cvtColor(yslide, cv2.COLOR_BGR2GRAY)
@@ -46,13 +55,20 @@ for files in os.listdir(dirname[1]):
 
 answer = []
 
+# for i in slidesName:
+#         print(i, end=' ')
+# print()
+# for i in yslidesName:
+#         print(i, end=' ')
+# print()
+
 for i in range(len(slides)):
     mm = -1
     for j in range(len(yslides)):
         similarity = flann.knnMatch(slidesDesc[i], slidesDesc[j], k=2)
         points = []
         for p1, p2 in similarity:
-            if p1.distance < 0.6*p2.distance:
+            if p1.distance < 0.7*p2.distance:
                 points.append(p1)
 
         if mm < len(points):
