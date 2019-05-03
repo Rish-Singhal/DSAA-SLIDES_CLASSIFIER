@@ -12,9 +12,10 @@ if numArg != 2:
 
 
 def printa(a):
-        for x in a:
-                print(x, end=' ')
-        print()
+    for x in a:
+        print(x, end=' ')
+    print()
+
 
 sift = cv2.xfeatures2d.SIFT_create()
 indp = dict(algorithm=0, trees=5)
@@ -62,6 +63,7 @@ answer = []
 #         print(i, end=' ')
 # print()
 
+
 for i in range(len(slides)):
     mm = -1
     for j in range(len(yslides)):
@@ -77,6 +79,10 @@ for i in range(len(slides)):
 
     answer.append(an)
 
+f = open("20171213_20171176_2018121004.txt", "w")
+
 for i in range(len(slides)):
-    line = "%s %s" % (slidesName[i], answer[i])
-    print(line)
+    line = "%s %s\n" % (slidesName[i], answer[i])
+    f.write(line)
+
+f.close()
