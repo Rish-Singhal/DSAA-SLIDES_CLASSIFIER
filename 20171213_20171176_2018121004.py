@@ -26,10 +26,10 @@ slides = []
 slidesKey = []
 slidesDesc = []
 slidesName = []
-test_data = os.listdir(dirname[0])
+test_data = os.listdir(dirname[1])
 test_data.sort()
 for files in test_data:
-    slide = cv2.imread(os.path.join(dirname[0], files))
+    slide = cv2.imread(os.path.join(dirname[1], files))
     if slide is not None:
         gslide = cv2.cvtColor(slide, cv2.COLOR_BGR2GRAY)
         keyPoint, desc = sift.detectAndCompute(gslide, None)
@@ -42,10 +42,10 @@ yslides = []
 yslidesKey = []
 yslidesDesc = []
 yslidesName = []
-verify_data = os.listdir(dirname[1])
+verify_data = os.listdir(dirname[0])
 verify_data.sort()
 for files in verify_data:
-    yslide = cv2.imread(os.path.join(dirname[1], files))
+    yslide = cv2.imread(os.path.join(dirname[0], files))
     if slide is not None:
         gslide = cv2.cvtColor(yslide, cv2.COLOR_BGR2GRAY)
         keyPoint, desc = sift.detectAndCompute(gslide, None)
@@ -67,7 +67,7 @@ answer = []
 for i in range(len(slides)):
     mm = -1
     for j in range(len(yslides)):
-        similarity = flann.knnMatch(slidesDesc[i], slidesDesc[j], k=2)
+        similarity = flann.knnMatch(slidesDesc[i], yslidesDesc[j], k=2)
         points = []
         for p1, p2 in similarity:
             if p1.distance < 0.7*p2.distance:
